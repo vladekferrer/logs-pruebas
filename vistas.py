@@ -87,7 +87,6 @@ cartera_hoy AS (
     FROM raw_account_move am
     WHERE am.move_type  = 'out_invoice'
       AND am.state      = 'posted'
-      AND am.company_id = 2
       AND am.amount_residual > 0
 ),
 margen AS (
@@ -239,7 +238,6 @@ cartera_por_cliente AS (
     WHERE move_type = 'out_invoice'
       AND state = 'posted'
       AND payment_state != 'paid'
-      AND company_id = 2
     GROUP BY partner_id
 )
 SELECT
@@ -554,7 +552,7 @@ cartera_critica AS (
            MAX(CAST(julianday('now') - julianday(invoice_date_due) AS INT)) AS max_dias
     FROM raw_account_move
     WHERE move_type = 'out_invoice' AND state = 'posted'
-      AND payment_state != 'paid' AND company_id = 2
+      AND payment_state != 'paid'
       AND julianday('now') - julianday(invoice_date_due) > 30
     GROUP BY partner_id
     HAVING SUM(amount_residual) > 1000000
